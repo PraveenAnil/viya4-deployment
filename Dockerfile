@@ -23,16 +23,8 @@ ARG gcp_cli_version=334.0.0
 RUN apt install -y gzip wget git git-lfs jq sshpass \
   && curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash \
   && helm plugin install https://github.com/databus23/helm-diff \
-  # AWS
-  && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${aws_cli_version}.zip" -o "awscliv2.zip" \
-  && unzip awscliv2.zip \
-  && ./aws/install \
   # AZURE
-  && curl -sL https://aka.ms/InstallAzureCLIDeb | bash \
-  # GCP
-  && curl "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${gcp_cli_version}-linux-x86_64.tar.gz" -o gcpcli.tar.gz \
-  && tar -xvf gcpcli.tar.gz \
-  && ./google-cloud-sdk/install.sh
+  && curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
 COPY --from=tool_builder /build/kubectl /usr/local/bin/kubectl
 COPY --from=tool_builder /build/kustomize /usr/local/bin/kustomize
@@ -50,7 +42,6 @@ RUN pip install -r ./requirements.txt \
 ENV PLAYBOOK=playbook.yaml
 ENV VIYA4_DEPLOYMENT_TOOLING=docker
 ENV ANSIBLE_CONFIG=/viya4-deployment/ansible.cfg
-ENV PATH=$PATH:/google-cloud-sdk/bin/
 
 VOLUME ["/data", "/config", "/vault"]
 ENTRYPOINT ["/viya4-deployment/docker-entrypoint.sh"]
